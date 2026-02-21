@@ -1,8 +1,3 @@
-plugins {
-    id "com.android.application"
-    id "kotlin-android"
-}
-
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -26,9 +21,13 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
+apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
+
 android {
     namespace "com.example.beat_maker_pro"
-    compileSdk 34
+    compileSdkVersion 34
     ndkVersion "25.2.9519653"
 
     compileOptions {
@@ -50,8 +49,6 @@ android {
         targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
     buildTypes {
@@ -59,6 +56,10 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+}
+
+flutter {
+    source '../..'
 }
 
 dependencies {

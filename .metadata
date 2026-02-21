@@ -1,0 +1,18 @@
+# This file tracks properties of this Flutter project.
+# Used by Flutter tool to assess capabilities and perform upgrades etc.
+#
+# This file should be version controlled and should not be manually edited.
+
+version:
+  revision: 3633507ead874c65e8841490cf05d9e50d03b0c2
+  channel: stable
+
+project_type: app
+
+# Tracks underlying version of the template used to create this project.
+template_info:
+  host_template: app
+  base_template: app
+  common_template: app
+  platforms:
+    - android
