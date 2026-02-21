@@ -45,11 +45,25 @@ class AudioEngine {
     await SoLoud.instance.init();
     
     // Load waveforms for professional synthesis
-    // API: loadWaveform(WaveForm waveform, double frequency, double volume, double detune)
-    _kickSource = await SoLoud.instance.loadWaveform(WaveForm.sin, 60, 1.0, 0.0);
-    _snareSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw, 200, 1.0, 0.0);
-    _hatSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw, 2000, 1.0, 0.0);
-    _clapSource = await SoLoud.instance.loadWaveform(WaveForm.fSquare, 400, 1.0, 0.0);
+    _kickSource = await SoLoud.instance.loadWaveform(WaveForm.sin);
+    if (_kickSource != null) {
+      await SoLoud.instance.setWaveformFreq(_kickSource!, 60);
+    }
+
+    _snareSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
+    if (_snareSource != null) {
+      await SoLoud.instance.setWaveformFreq(_snareSource!, 200);
+    }
+
+    _hatSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
+    if (_hatSource != null) {
+      await SoLoud.instance.setWaveformFreq(_hatSource!, 2000);
+    }
+
+    _clapSource = await SoLoud.instance.loadWaveform(WaveForm.fSquare);
+    if (_clapSource != null) {
+      await SoLoud.instance.setWaveformFreq(_clapSource!, 400);
+    }
 
     _initialized = true;
   }
