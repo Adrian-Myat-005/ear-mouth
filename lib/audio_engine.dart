@@ -45,10 +45,11 @@ class AudioEngine {
     await SoLoud.instance.init();
     
     // Load waveforms for professional synthesis
-    _kickSource = await SoLoud.instance.loadWaveform(WaveForm.sin, superWave: true);
-    _snareSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
-    _hatSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
-    _clapSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
+    // API: loadWaveform(WaveForm waveform, double frequency, double volume, double detune)
+    _kickSource = await SoLoud.instance.loadWaveform(WaveForm.sin, 60, 1.0, 0.0);
+    _snareSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw, 200, 1.0, 0.0);
+    _hatSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw, 2000, 1.0, 0.0);
+    _clapSource = await SoLoud.instance.loadWaveform(WaveForm.fSquare, 400, 1.0, 0.0);
 
     _initialized = true;
   }
@@ -96,7 +97,7 @@ class AudioEngine {
   void _playKick() {
     if (_kickSource == null) return;
     SoLoud.instance.play(_kickSource!, volume: 1.0).then((handle) {
-      // Quick pitch drop and volume decay for professional kick
+      // Quick volume decay for professional kick
       SoLoud.instance.fadeVolume(handle, 0.0, const Duration(milliseconds: 150));
       Future.delayed(const Duration(milliseconds: 150), () => SoLoud.instance.stop(handle));
     });
@@ -133,6 +134,6 @@ class AudioEngine {
 
   Future<void> dispose() async {
     stop();
-    await SoLoud.instance.deinit();
+    SoLoud.instance.deinit(); // deinit returns void in v2.0.0
   }
 }
