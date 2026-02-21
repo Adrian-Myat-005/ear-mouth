@@ -45,24 +45,24 @@ class AudioEngine {
     await SoLoud.instance.init();
     
     // Load waveforms for professional synthesis
-    _kickSource = await SoLoud.instance.loadWaveform(WaveForm.sin);
+    _kickSource = await SoLoud.instance.loadWaveform(WaveForm.sin, false, 1.0, 0.0);
     if (_kickSource != null) {
-      await SoLoud.instance.setWaveformFreq(_kickSource!, 60);
+      SoLoud.instance.setWaveformFreq(_kickSource!, 60);
     }
 
-    _snareSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
+    _snareSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw, false, 1.0, 0.0);
     if (_snareSource != null) {
-      await SoLoud.instance.setWaveformFreq(_snareSource!, 200);
+      SoLoud.instance.setWaveformFreq(_snareSource!, 200);
     }
 
-    _hatSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
+    _hatSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw, false, 1.0, 0.0);
     if (_hatSource != null) {
-      await SoLoud.instance.setWaveformFreq(_hatSource!, 2000);
+      SoLoud.instance.setWaveformFreq(_hatSource!, 2000);
     }
 
-    _clapSource = await SoLoud.instance.loadWaveform(WaveForm.fSquare);
+    _clapSource = await SoLoud.instance.loadWaveform(WaveForm.fSquare, false, 1.0, 0.0);
     if (_clapSource != null) {
-      await SoLoud.instance.setWaveformFreq(_clapSource!, 400);
+      SoLoud.instance.setWaveformFreq(_clapSource!, 400);
     }
 
     _initialized = true;
