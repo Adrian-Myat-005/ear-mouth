@@ -14,7 +14,13 @@ class AudioEngine {
   final int _totalSteps = 16;
   Timer? _timer;
 
-  // Track patterns: map of DrumType to a list of 16 booleans (active/inactive)
+  // Sound source properties
+  AudioSource? _kickSource;
+  AudioSource? _snareSource;
+  AudioSource? _hatSource;
+  AudioSource? _clapSource;
+
+  // Track patterns: map of DrumType to a list of 16 booleans
   final Map<DrumType, List<bool>> patterns = {
     DrumType.kick: List.generate(16, (index) => index % 4 == 0),
     DrumType.snare: List.generate(16, (index) => index % 8 == 4),
@@ -37,13 +43,14 @@ class AudioEngine {
   Future<void> init() async {
     if (_initialized) return;
     await SoLoud.instance.init();
-    _initialized = true;
-  }
+    
+    // Load waveforms for professional synthesis
+    _kickSource = await SoLoud.instance.loadWaveform(WaveForm.sin, superWave: true);
+    _snareSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
+    _hatSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
+    _clapSource = await SoLoud.instance.loadWaveform(WaveForm.fSaw);
 
-  Future<void> startRecording() async {
-    // Start capturing the master output
-    // Note: soloud_recorder is usually a separate plugin or part of soloud
-    // We will use a conceptual placeholder for professional export
+    _initialized = true;
   }
 
   void play() {
@@ -63,12 +70,13 @@ class AudioEngine {
   void _triggerStep() {
     patterns.forEach((type, steps) {
       if (steps[_currentStep]) {
-        _playSound(type);
+        playSound(type);
       }
     });
   }
 
-  void _playSound(DrumType type) {
+  void playSound(DrumType type) {
+    if (!_initialized) return;
     switch (type) {
       case DrumType.kick:
         _playKick();
@@ -85,60 +93,39 @@ class AudioEngine {
     }
   }
 
-  // --- From-scratch Synthesis ---
-
   void _playKick() {
-    final sound = SoLoud.instance.playOscillator(
-      waveform: Waveform.sin,
-      frequency: 60,
-    );
-    // Exponential volume decay for a "thump"
-    SoLoud.instance.setVolume(sound, 1.0);
-    Future.delayed(const Duration(milliseconds: 50), () {
-      SoLoud.instance.fadeVolume(sound, 0.0, const Duration(milliseconds: 150));
-      Future.delayed(const Duration(milliseconds: 150), () {
-        SoLoud.instance.stop(sound);
-      });
+    if (_kickSource == null) return;
+    SoLoud.instance.play(_kickSource!, volume: 1.0).then((handle) {
+      // Quick pitch drop and volume decay for professional kick
+      SoLoud.instance.fadeVolume(handle, 0.0, const Duration(milliseconds: 150));
+      Future.delayed(const Duration(milliseconds: 150), () => SoLoud.instance.stop(handle));
     });
   }
 
   void _playSnare() {
-    final sound = SoLoud.instance.playOscillator(
-      waveform: Waveform.whiteNoise,
-    );
-    SoLoud.instance.setVolume(sound, 0.8);
-    // High-pass filter simulation + quick decay
-    Future.delayed(const Duration(milliseconds: 20), () {
-      SoLoud.instance.fadeVolume(sound, 0.0, const Duration(milliseconds: 100));
-      Future.delayed(const Duration(milliseconds: 100), () {
-        SoLoud.instance.stop(sound);
-      });
+    if (_snareSource == null) return;
+    SoLoud.instance.play(_snareSource!, volume: 0.7).then((handle) {
+      SoLoud.instance.fadeVolume(handle, 0.0, const Duration(milliseconds: 100));
+      Future.delayed(const Duration(milliseconds: 100), () => SoLoud.instance.stop(handle));
     });
   }
 
   void _playHat() {
-    final sound = SoLoud.instance.playOscillator(
-      waveform: Waveform.whiteNoise,
-    );
-    SoLoud.instance.setVolume(sound, 0.4);
-    // Very short decay
-    Future.delayed(const Duration(milliseconds: 5), () {
-      SoLoud.instance.fadeVolume(sound, 0.0, const Duration(milliseconds: 40));
-      Future.delayed(const Duration(milliseconds: 40), () {
-        SoLoud.instance.stop(sound);
-      });
+    if (_hatSource == null) return;
+    SoLoud.instance.play(_hatSource!, volume: 0.3).then((handle) {
+      SoLoud.instance.fadeVolume(handle, 0.0, const Duration(milliseconds: 40));
+      Future.delayed(const Duration(milliseconds: 40), () => SoLoud.instance.stop(handle));
     });
   }
 
   void _playClap() {
-    // Claps are traditionally multiple quick noise bursts
+    if (_clapSource == null) return;
+    // Multi-trigger for clap feel
     for (int i = 0; i < 3; i++) {
       Future.delayed(Duration(milliseconds: i * 15), () {
-        final sound = SoLoud.instance.playOscillator(waveform: Waveform.whiteNoise);
-        SoLoud.instance.setVolume(sound, 0.6);
-        SoLoud.instance.fadeVolume(sound, 0.0, const Duration(milliseconds: 80));
-        Future.delayed(const Duration(milliseconds: 80), () {
-          SoLoud.instance.stop(sound);
+        SoLoud.instance.play(_clapSource!, volume: 0.5).then((handle) {
+          SoLoud.instance.fadeVolume(handle, 0.0, const Duration(milliseconds: 80));
+          Future.delayed(const Duration(milliseconds: 80), () => SoLoud.instance.stop(handle));
         });
       });
     }

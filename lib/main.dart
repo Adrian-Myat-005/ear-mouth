@@ -218,7 +218,7 @@ class _BeatMakerScreenState extends State<BeatMakerScreen> {
 
   Widget _buildPad(DrumType type, String label, Color color) {
     return GestureDetector(
-      onTapDown: (_) => _audio.playOneShot(type), // Simplified one-shot
+      onTapDown: (_) => _audio.playSound(type), // Match updated public API
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white12,
@@ -236,6 +236,6 @@ class _BeatMakerScreenState extends State<BeatMakerScreen> {
 // Extension to AudioEngine for one-shots
 extension on AudioEngine {
   void playOneShot(DrumType type) {
-    _playSound(type);
+    playSound(type);
   }
 }
