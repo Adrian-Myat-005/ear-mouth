@@ -1,0 +1,16 @@
+# Flutter
+.dart_tool/
+.packages
+.pub-cache/
+.pub/
+build/
+ios/.symlinks/
+android/app/local.properties
+android/app/flutter_sdk.path
+
+# OS
+.DS_Store
+.idea/
+*.iml
+*.swp
+*.log
